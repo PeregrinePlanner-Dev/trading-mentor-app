@@ -30,7 +30,9 @@ def health():
 
 
 from auth import auth_bp  # noqa: E402  (must come after app.secret_key is set)
+from trades import trades_bp  # noqa: E402
 app.register_blueprint(auth_bp)
+app.register_blueprint(trades_bp)
 
 
 if __name__ == "__main__":

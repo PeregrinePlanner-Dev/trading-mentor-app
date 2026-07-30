@@ -252,14 +252,20 @@ def signup():
     session["sb_email"] = email
     session["sb_user_id"] = result.user.id
 
+    # Explicit upsert, not update -- there is no Postgres trigger creating a
+    # profiles row on auth.users insert (unlike Selah's handle_new_user()).
+    # An update() against a nonexistent row silently affects zero rows, so
+    # this must be the row's first creation, not an edit of one assumed to
+    # already exist.
     try:
-        get_service_client().table("profiles").update({
+        get_service_client().table("profiles").upsert({
+            "id": result.user.id,
             "first_name": first_name,
             "last_name": last_name,
             "email": email,
-        }).eq("id", result.user.id).execute()
-    except Exception:
-        pass
+        }).execute()
+    except Exception as e:
+        print(f"[SIGNUP] Could not create profile row for {result.user.id}: {e}")
 
     _create_initial_org_and_plan(result.user.id)
 
