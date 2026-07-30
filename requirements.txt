@@ -1,0 +1,5 @@
+flask
+gunicorn
+supabase
+sentry-sdk[flask]
+python-dotenv
