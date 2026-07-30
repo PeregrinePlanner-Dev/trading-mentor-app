@@ -24,9 +24,13 @@ if not app.secret_key:
     raise RuntimeError("FLASK_SECRET_KEY must be set as a real env var — no default allowed.")
 
 
-@app.route("/")
+@app.route("/health")
 def health():
     return jsonify(status="ok", service="trading-mentor")
+
+
+from auth import auth_bp  # noqa: E402  (must come after app.secret_key is set)
+app.register_blueprint(auth_bp)
 
 
 if __name__ == "__main__":
